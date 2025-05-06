@@ -19,15 +19,13 @@ build:
 requirements:
   host:
     - python
-    - pdm >2
     - pdm-pep517
     - pdm-backend
     - pip
   run:
     - python
-    - cached-property
     - colorama >=0.4
-    
+
 test:
   imports:
     - griffe
