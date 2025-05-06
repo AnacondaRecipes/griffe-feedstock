@@ -44,7 +44,7 @@ about:
   description: |
     Griffe is a tool to extract the structure of your project to generate API documentation or find breaking changes in your API.
     It can be used to generate API documentation, to find breaking changes in your API, or to extract the structure of your project to generate API documentation.
-  license: MIT
+  license: ISC
   license_file: LICENSE
   license_family: MIT
 
