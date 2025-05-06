@@ -27,7 +27,7 @@ requirements:
     - python
     - cached-property
     - colorama >=0.4
-
+    
 test:
   imports:
     - griffe
