@@ -46,6 +46,8 @@ outputs:
         - pip
       commands:
         - pip check
+        # Smoke-test the API by loading a stdlib module's structure.
+        - python -c "import griffe; m = griffe.load('json'); assert m.name == 'json'"
 
   - name: griffecli
     build:
