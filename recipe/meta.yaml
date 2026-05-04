@@ -19,11 +19,17 @@ build:
   number: 0
   skip: true  # [py<310]
 
+requirements:
+  host:
+    - python
+  run:
+    - python
+
 outputs:
   - name: griffelib
     build:
       script:
-        - cd griffelib && UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+        - UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffelib --no-deps --no-build-isolation -vv
     requirements:
       host:
         - python
@@ -44,7 +50,7 @@ outputs:
   - name: griffecli
     build:
       script:
-        - cd griffecli && UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+        - UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffecli --no-deps --no-build-isolation -vv
       entry_points:
         - griffecli = griffecli:main
     requirements:
@@ -72,7 +78,7 @@ outputs:
   - name: griffe
     build:
       script:
-        - cd griffe && UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+        - UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffe --no-deps --no-build-isolation -vv
       entry_points:
         - griffe = griffecli:main
     requirements:
