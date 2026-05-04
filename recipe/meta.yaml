@@ -27,8 +27,9 @@ requirements:
 
 outputs:
   - name: griffelib
-    script: build-griffelib.sh   # [unix]
-    script: bld-griffelib.bat    # [win]
+    build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffelib --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffelib --no-deps --no-build-isolation -vv      # [win]
     requirements:
       host:
         - python
@@ -47,9 +48,9 @@ outputs:
         - pip check
 
   - name: griffecli
-    script: build-griffecli.sh   # [unix]
-    script: bld-griffecli.bat    # [win]
     build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffecli --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffecli --no-deps --no-build-isolation -vv      # [win]
       entry_points:
         - griffecli = griffecli:main
     requirements:
@@ -75,9 +76,9 @@ outputs:
         - griffecli --version
 
   - name: griffe
-    script: build-griffe.sh   # [unix]
-    script: bld-griffe.bat    # [win]
     build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffe --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffe --no-deps --no-build-isolation -vv      # [win]
       entry_points:
         - griffe = griffecli:main
     requirements:
