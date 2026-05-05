@@ -1,54 +1,131 @@
-{% set name = "griffe" %}
-{% set version = "1.7.3" %}
+{% set version = "2.0.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: griffe-split
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/griffe-{{ version }}.tar.gz
-  sha256: 52ee893c6a3a968b639ace8015bec9d36594961e156e23315c8e8e51401fa50b
+  - url: https://pypi.org/packages/source/g/griffelib/griffelib-{{ version }}.tar.gz
+    sha256: 3cf20b3bc470e83763ffbf236e0076b1211bac1bc67de13daf494640f2de707e
+    folder: griffelib
+  - url: https://pypi.org/packages/source/g/griffecli/griffecli-{{ version }}.tar.gz
+    sha256: 40a1ad4181fc39685d025e119ae2c5b669acdc1f19b705fb9bf971f4e6f6dffb
+    folder: griffecli
+  - url: https://pypi.org/packages/source/g/griffe/griffe-{{ version }}.tar.gz
+    sha256: c5d56326d159f274492e9bf93a9895cec101155d944caa66d0fc4e0c13751b92
+    folder: griffe
 
 build:
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
   number: 0
-  entry_points:
-    - griffe = griffe:main
-  skip: true # [py<39]
+  skip: true  # [py<310]
 
 requirements:
   host:
     - python
-    - pdm-pep517
-    - pdm-backend
-    - pip
   run:
     - python
-    - colorama >=0.4
 
-test:
-  imports:
-    - griffe
-  commands:
-    - griffe --help
-    - griffe --version
-    - pip check
-  requires:
-    - pip
+outputs:
+  - name: griffelib
+    build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffelib --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffelib --no-deps --no-build-isolation -vv      # [win]
+    requirements:
+      host:
+        - python
+        - pip
+        - hatchling
+        - pdm-backend
+        - uv-dynamic-versioning >=0.7.0
+      run:
+        - python
+    test:
+      imports:
+        - griffe
+      requires:
+        - pip
+      commands:
+        - pip check
+        # Smoke-test the API by loading a stdlib module's structure.
+        - python -c "import griffe; m = griffe.load('json'); assert m.name == 'json'"
+
+  - name: griffecli
+    build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffecli --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffecli --no-deps --no-build-isolation -vv      # [win]
+      entry_points:
+        - griffecli = griffecli:main
+    requirements:
+      host:
+        - python
+        - pip
+        - hatchling
+        - pdm-backend
+        - uv-dynamic-versioning >=0.7.0
+        - {{ pin_subpackage('griffelib', exact=True) }}
+      run:
+        - python
+        - colorama >=0.4
+        - {{ pin_subpackage('griffelib', exact=True) }}
+    test:
+      imports:
+        - griffecli
+      requires:
+        - pip
+      commands:
+        - pip check
+        - griffecli --help
+        - griffecli --version
+
+  - name: griffe
+    build:
+      script: UV_DYNAMIC_VERSIONING_BYPASS={{ version }} {{ PYTHON }} -m pip install ./griffe --no-deps --no-build-isolation -vv                # [unix]
+      script: set "UV_DYNAMIC_VERSIONING_BYPASS={{ version }}" && {{ PYTHON }} -m pip install .\griffe --no-deps --no-build-isolation -vv      # [win]
+      entry_points:
+        - griffe = griffecli:main
+    requirements:
+      host:
+        - python
+        - pip
+        - hatchling
+        - pdm-backend
+        - uv-dynamic-versioning >=0.7.0
+        - {{ pin_subpackage('griffelib', exact=True) }}
+        - {{ pin_subpackage('griffecli', exact=True) }}
+      run:
+        - python
+        - {{ pin_subpackage('griffelib', exact=True) }}
+        - {{ pin_subpackage('griffecli', exact=True) }}
+    test:
+      imports:
+        - griffe
+      requires:
+        - pip
+      commands:
+        - pip check
+        - griffe --help
+        - griffe --version
 
 about:
   home: https://mkdocstrings.github.io/griffe
-  doc_url: https://mkdocstrings.github.io/griffe
-  dev_url: https://github.com/mkdocstrings/griffe
+  license: ISC
+  license_family: MIT
+  license_file: griffelib/LICENSE
   summary: Signatures for entire Python programs. Extract the structure, the frame, the skeleton of your project, to generate API documentation or find breaking changes in your API.
   description: |
-    Griffe is a tool to extract the structure of your project to generate API documentation or find breaking changes in your API.
-    It can be used to generate API documentation, to find breaking changes in your API, or to extract the structure of your project to generate API documentation.
-  license: ISC
-  license_file: LICENSE
-  license_family: MIT
+    Griffe is a tool to extract the structure of your project to generate API
+    documentation or find breaking changes in your API.
+
+    As of v2.0, the project is split into three packages: griffelib (the
+    library that provides the griffe Python module), griffecli (the
+    command-line tools), and griffe (an umbrella metapackage that installs
+    both).
+  doc_url: https://mkdocstrings.github.io/griffe
+  dev_url: https://github.com/mkdocstrings/griffe
 
 extra:
   recipe-maintainers:
     - bandersen23
     - dbast
+    - moritzwilksch
+    - xkong-anaconda
