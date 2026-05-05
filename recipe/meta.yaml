@@ -117,7 +117,7 @@ about:
     documentation or find breaking changes in your API.
 
     As of v2.0, the project is split into three packages: griffelib (the
-    library that provides the `griffe` Python module), griffecli (the
+    library that provides the griffe Python module), griffecli (the
     command-line tools), and griffe (an umbrella metapackage that installs
     both).
   doc_url: https://mkdocstrings.github.io/griffe
